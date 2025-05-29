@@ -30,8 +30,8 @@ DocIQ is a Streamlit-based web application designed to help users upload PDF doc
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/dociq.git
-   cd dociq
+   git clone https://github.com/Esataydin/Smart-Document-Summarizer.git
+   cd Smart-Document-Summarizer
    ```
 
 2. Create and activate a virtual environment (optional but recommended):
