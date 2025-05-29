@@ -58,9 +58,17 @@ streamlit run app.py
 ```
 
 * Upload a PDF document.
+* Alternatively, try the included test.pdf file in the repository/folder for a quick demo.
 * Choose a summary role and generate a tailored summary.
 * Ask questions about the document and get relevant answers with context.
 * Download summaries and Q\&A results for offline use.
+
+---
+
+## Notes
+
+- The current summarization model (`facebook/bart-large-cnn`) used locally is relatively small and may not provide perfect results for very large or complex documents.
+- Performance and summary quality will improve once a larger or more advanced model is integrated in future updates.
 
 ---
 
