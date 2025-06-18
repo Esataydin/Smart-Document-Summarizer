@@ -54,7 +54,7 @@ DocIQ is a Streamlit-based web application designed to help users upload PDF doc
 Run the Streamlit app locally:
 
 ```bash
-streamlit run app.py
+streamlit run main.py
 ```
 
 * Upload a PDF document.

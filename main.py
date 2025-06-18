@@ -1,25 +1,24 @@
-
-
-
 import streamlit as st
 import fitz  # PyMuPDF for PDF reading
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
+from transformers import pipeline as hf_pipeline
 import base64
 
 # === Load Models ===
 st.set_page_config(page_title="DocIQ - Local", layout="wide")
-st.title("📄 DocIQ - Smart Document Summarizer + Search")
+st.title("📄 DocIQ - Smart Document Summarizer & Q&A (Full Doc Summary)")
 
 @st.cache_resource
 def load_models():
-    embed_model = SentenceTransformer('all-MiniLM-L6-v2')
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    return embed_model, summarizer
+    embed_model = SentenceTransformer('BAAI/bge-large-en')  # High-accuracy embedding model
+    summarizer = pipeline("summarization", model="google/pegasus-xsum")  # Full-document summary
+    qa_model = hf_pipeline("question-answering", model="deepset/roberta-base-squad2")
+    return embed_model, summarizer, qa_model
 
-embed_model, summarizer = load_models()
+embed_model, summarizer, qa_pipeline = load_models()
 
 # === PDF Upload ===
 uploaded_file = st.file_uploader("Upload a PDF document", type="pdf")
@@ -40,6 +39,10 @@ def chunk_text(text, max_tokens=150, overlap=30):
         chunks.append(" ".join(chunk))
         i += max_tokens - overlap
     return chunks
+
+def truncate_text(text, max_words=300):
+    words = text.split()
+    return " ".join(words[:max_words])
 
 class VectorStore:
     def __init__(self, dim):
@@ -69,10 +72,10 @@ role_prompts = {
 if uploaded_file:
     with st.spinner("Processing document..."):
         text = extract_text_from_pdf(uploaded_file)
-        if len(text.split()) > 8000:
-            st.warning("⚠️ Document is very long. Consider uploading a shorter file for better results.")
+        if len(text.split()) > 15000:
+            st.warning("⚠️ Document is very long. Consider uploading a shorter file or using fewer pages.")
 
-        chunks = chunk_text(text)
+        chunks = chunk_text(text, max_tokens=300, overlap=50)
         embeddings = embed_model.encode(chunks, convert_to_numpy=True)
 
         store = VectorStore(dim=embeddings.shape[1])
@@ -84,34 +87,51 @@ if uploaded_file:
         role = st.selectbox("Select role for summary:", list(role_prompts.keys()))
         summary_text = ""
         if st.button("Generate Summary"):
-            for chunk in chunks[:3]:
-                result = summarizer(role_prompts[role] + " " + chunk, max_length=150, min_length=40, do_sample=False)
-                summary_text += "\n- " + result[0]['summary_text']
-            st.subheader(f"📌 Summary for {role}:")
-            st.write(summary_text)
+            st.info(f"Document split into {len(chunks)} parts for summarization.")
+            summaries = []
+            for chunk in chunks[:5]:
+                safe_chunk = truncate_text(chunk)
+                input_text = role_prompts[role] + " " + safe_chunk
+                try:
+                    result = summarizer(input_text, max_length=120, min_length=50, do_sample=False)
+                    chunk_summary = result[0]['summary_text']
+                    st.markdown(f"✅ **Chunk Summary:** {chunk_summary}")
+                    summaries.append(chunk_summary)
+                except Exception as e:
+                    st.error(f"❌ Failed to summarize a chunk: {e}")
 
-            download_link = create_download_button(summary_text, f"summary_{role}.txt", "📥 Download Summary")
-            st.markdown(download_link, unsafe_allow_html=True)
+            if summaries:
+                combined = " ".join(summaries)
+                try:
+                    final_result = summarizer(combined, max_length=200, min_length=80, do_sample=False)
+                    summary_text = final_result[0]['summary_text']
+                except Exception as e:
+                    st.warning("⚠️ Could not re-summarize. Displaying combined chunk summaries.")
+                    summary_text = combined
+
+                st.subheader(f"📌 Summary for {role}:")
+                st.write(summary_text)
+
+                download_link = create_download_button(summary_text, f"summary_{role}.txt", "📥 Download Summary")
+                st.markdown(download_link, unsafe_allow_html=True)
+            else:
+                st.warning("❌ Could not generate any summaries.")
 
         # === Q&A Interface ===
         query = st.text_input("Ask a question about the document:")
         if query:
             with st.spinner("Searching relevant context..."):
-                q_vec = embed_model.encode([query], convert_to_numpy=True)[0]
+                q_vec = embed_model.encode(["Represent this question for retrieving relevant documents: " + query], convert_to_numpy=True)[0]
                 top_chunks = store.search(q_vec, k=3)
-                st.subheader("🔍 Most Relevant Excerpts:")
-                snippet_text = ""
-                for i, chunk in enumerate(top_chunks):
-                    excerpt = f"**{i+1}.** {chunk[:500]}..."
-                    st.markdown(excerpt)
-                    snippet_text += excerpt + "\n\n"
+                context = " ".join(top_chunks)
 
-                combined_context = " ".join(top_chunks[:2])
-                result = summarizer(combined_context + " Question: " + query, max_length=150, min_length=40, do_sample=False)
                 st.subheader("🧠 Answer:")
-                st.write(result[0]['summary_text'])
+                try:
+                    answer = qa_pipeline({'question': query, 'context': context})
+                    st.write(f"**{answer['answer']}** (confidence: {round(answer.get('score', 0)*100, 2)}%)")
 
-                full_qa_output = f"Question:\n{query}\n\nRelevant Excerpts:\n{snippet_text}\n\nAnswer:\n{result[0]['summary_text']}"
-                qa_link = create_download_button(full_qa_output, "qa_result.txt", "📥 Download Full Q&A")
-                st.markdown(qa_link, unsafe_allow_html=True)
-
+                    full_qa_output = f"Question:\n{query}\n\nContext:\n{context}\n\nAnswer:\n{answer['answer']}"
+                    qa_link = create_download_button(full_qa_output, "qa_result.txt", "📥 Download Full Q&A")
+                    st.markdown(qa_link, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Failed to generate answer: {e}")
