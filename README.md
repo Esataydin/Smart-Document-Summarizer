@@ -1,32 +1,42 @@
-# DocIQ - Smart Document Summarizer + Search
+# 📄 DocIQ – Smart Document Summarizer & Q&A (Local App)
 
-DocIQ is a Streamlit-based web application designed to help users upload PDF documents and perform intelligent summarization and semantic search on the content. It leverages powerful NLP models to provide role-based summaries and an interactive Q&A interface that finds relevant excerpts in the document and generates precise answers.
-
----
-
-## Features
-
-- **PDF Upload & Text Extraction:** Extracts and processes text from uploaded PDF files.
-- **Text Chunking:** Splits large documents into manageable overlapping chunks for better embeddings.
-- **Semantic Search:** Uses FAISS for fast similarity search on vector embeddings of document chunks.
-- **Role-Based Summarization:** Generates summaries tailored to different roles such as General, CEO, Engineer, and Legal Analyst.
-- **Interactive Q&A:** Ask questions about the document and get context-aware answers with relevant excerpts.
-- **Downloadable Results:** Allows downloading generated summaries and full Q&A results as text files.
+**DocIQ** is a local, privacy-friendly document analysis tool built with **Streamlit**. It allows users to upload a PDF, extract and summarize its content based on audience role (CEO, Engineer, Legal Analyst, etc.), and ask natural language questions with precise, context-aware answers.
 
 ---
 
-## Technologies Used
+## ✨ Features
 
-- **Streamlit** - Web application framework for Python.
-- **PyMuPDF (fitz)** - PDF parsing and text extraction.
-- **Sentence-Transformers** - Producing vector embeddings for semantic search.
-- **FAISS** - Efficient similarity search library by Facebook AI.
-- **Transformers (Hugging Face)** - State-of-the-art summarization pipeline using `facebook/bart-large-cnn`.
-- **Base64** - For generating downloadable summary and Q&A files.
+### 📌 Role-Based Summarization
+- Generate tailored summaries for different audiences:
+  - CEO: High-level impact and business takeaways
+  - Engineer: Technical metrics and architecture
+  - Legal Analyst: Compliance, dates, legal terms
+- Uses `google/pegasus-xsum` for high-quality summarization.
+
+### 🔍 Intelligent Q&A
+- Ask natural language questions based on the document.
+- Finds the most relevant excerpt using semantic search (`bge-large-en + FAISS`).
+- Answers are generated using a real QA model (`roberta-base-squad2`).
+- Displays confidence score for transparency.
+
+### 🧾 Export
+- Download summary or full Q&A output as `.txt` files.
 
 ---
 
-## Installation
+## 🛠 Tech Stack
+
+- **Streamlit** – Web UI
+- **Sentence-Transformers** – `BAAI/bge-large-en` for semantic embeddings
+- **FAISS** – Fast vector similarity search
+- **Transformers (Hugging Face)**:
+  - `google/pegasus-xsum` – Summarization
+  - `deepset/roberta-base-squad2` – Question Answering
+- **PyMuPDF** – PDF text extraction
+
+---
+
+## 🚀 Getting Started
 
 1. Clone the repository:
    ```bash
@@ -46,16 +56,12 @@ DocIQ is a Streamlit-based web application designed to help users upload PDF doc
    ```bash
    pip install -r requirements.txt
    ```
-   
----
 
-## Usage
+4. Run the app:
 
-Run the Streamlit app locally:
-
-```bash
-streamlit run main.py
-```
+   ```bash
+   streamlit run main.py
+   ```
 
 * Upload a PDF document.
 * Alternatively, try the included test.pdf file in the repository/folder for a quick demo.
@@ -65,10 +71,22 @@ streamlit run main.py
 
 ---
 
-## Notes
+## 📂 Folder Structure
+├── main.py              # Streamlit application <br>
+├── requirements.txt     # Dependencies <br>
+├── test.pdf             # Example document for test <br>
+├── test.txt             # Example document for test(future work) <br>
+└── README.md            # Project documentation <br>
 
-- The current summarization model (`facebook/bart-large-cnn`) used locally is relatively small and may not provide perfect results for very large or complex documents.
-- Performance and summary quality will improve once a larger or more advanced model is integrated in future updates.
+
+
+
+---
+
+## 📌 Notes
+- All models run locally — no OpenAI API key required
+- Works offline and respects document privacy
+- Best performance with medium-length PDFs (~5–10 pages)
 
 ---
 
