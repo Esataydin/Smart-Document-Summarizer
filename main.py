@@ -6,6 +6,16 @@ from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from transformers import pipeline as hf_pipeline
 import base64
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Configuration from environment variables
+CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 300))
+OVERLAP_SIZE = int(os.getenv('OVERLAP_SIZE', 50))
+MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE', 15000))
 
 # === Load Models ===
 st.set_page_config(page_title="DocIQ - Local", layout="wide")
@@ -30,7 +40,12 @@ def extract_text_from_pdf(file):
         text += page.get_text()
     return text
 
-def chunk_text(text, max_tokens=150, overlap=30):
+def chunk_text(text, max_tokens=None, overlap=None):
+    if max_tokens is None:
+        max_tokens = CHUNK_SIZE
+    if overlap is None:
+        overlap = OVERLAP_SIZE
+    
     words = text.split()
     chunks = []
     i = 0
@@ -72,10 +87,10 @@ role_prompts = {
 if uploaded_file:
     with st.spinner("Processing document..."):
         text = extract_text_from_pdf(uploaded_file)
-        if len(text.split()) > 15000:
+        if len(text.split()) > MAX_DOCUMENT_SIZE:
             st.warning("⚠️ Document is very long. Consider uploading a shorter file or using fewer pages.")
 
-        chunks = chunk_text(text, max_tokens=300, overlap=50)
+        chunks = chunk_text(text, max_tokens=CHUNK_SIZE, overlap=OVERLAP_SIZE)
         embeddings = embed_model.encode(chunks, convert_to_numpy=True)
 
         store = VectorStore(dim=embeddings.shape[1])
