@@ -1,146 +1,295 @@
-# 📄 DocIQ – Smart Document Summarizer & Q&A (Local App)
+<div align="center">
 
-**DocIQ** is a local, privacy-friendly document analysis tool built with **Streamlit**. It allows users to upload a PDF, extract and summarize its content based on audience role (CEO, Engineer, Legal Analyst, etc.), and ask natural language questions with precise, context-aware answers.
+# � DocIQ
+### *Intelligent Document Analysis Platform*
 
----
+*Transform any document into actionable insights with AI-powered summarization and Q&A capabilities*
 
-## ✨ Features
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.45+-red.svg)](https://streamlit.io)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com/Esataydin)
 
-### 📌 Role-Based Summarization
-- Generate tailored summaries for different audiences:
-  - CEO: High-level impact and business takeaways
-  - Engineer: Technical metrics and architecture
-  - Legal Analyst: Compliance, dates, legal terms
-- Uses `google/pegasus-xsum` for high-quality summarization.
-
-### 🔍 Intelligent Q&A
-- Ask natural language questions based on the document.
-- Finds the most relevant excerpt using semantic search (`bge-large-en + FAISS`).
-- Answers are generated using a real QA model (`roberta-base-squad2`).
-- Displays confidence score for transparency.
-
-### 🧾 Export
-- Download summary or full Q&A output as `.txt` files.
+</div>
 
 ---
 
-## 🛠 Tech Stack
+## 🎯 **What is DocIQ?**
 
-- **Streamlit** – Web UI
-- **Sentence-Transformers** – `BAAI/bge-large-en` for semantic embeddings
-- **FAISS** – Fast vector similarity search
-- **Transformers (Hugging Face)**:
-  - `google/pegasus-xsum` – Summarization
-  - `deepset/roberta-base-squad2` – Question Answering
-- **PyMuPDF** – PDF text extraction
+DocIQ is a **privacy-first, locally-hosted** document intelligence platform that leverages state-of-the-art AI models to extract, analyze, and summarize content from your documents. Built with Streamlit, it provides an intuitive interface for document processing without compromising your data privacy.
+
+### ⚡ **Key Highlights**
+- 🔒 **100% Local Processing** - Your documents never leave your machine
+- 🎭 **Role-Based Intelligence** - Tailored summaries for different audiences
+- 💬 **Smart Q&A System** - Natural language document interrogation
+- ⚡ **Lightning Fast** - Powered by FAISS vector search
+- 📊 **Structured Output** - Clean summaries with actionable insights
 
 ---
 
-## 🚀 Getting Started
+## 🎪 **Features & Capabilities**
 
-1. Clone the repository:
+<table>
+<tr>
+<td width="50%">
+
+### 📌 **Role-Based Summarization**
+Generate intelligent summaries tailored for:
+- **👔 CEO**: Business impact & strategic insights
+- **⚙️ Engineer**: Technical specs & architecture
+- **⚖️ Legal Analyst**: Compliance & risk analysis
+- **📊 General**: Balanced overview
+
+</td>
+<td width="50%">
+
+### 🔍 **Intelligent Q&A System**
+- Ask natural language questions
+- Semantic search with `bge-large-en`
+- Context-aware answers with confidence scores
+- Export Q&A sessions for reference
+
+</td>
+</tr>
+</table>
+
+### 🧾 **Export & Download**
+- Download summaries as formatted text files
+- Export complete Q&A sessions
+- Role-specific summary exports
+
+---
+
+## 🏗️ **Architecture & Tech Stack**
+
+```mermaid
+graph TD
+    A[Document Upload] --> B[Text Extraction]
+    B --> C[Text Chunking]
+    C --> D[Embedding Generation]
+    D --> E[Vector Store]
+    E --> F[Semantic Search]
+    F --> G[AI Summary/Q&A]
+```
+
+### 🛠️ **Core Technologies**
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Frontend** | Streamlit | Interactive web interface |
+| **Text Processing** | PyMuPDF | PDF text extraction |
+| **Embeddings** | SentenceTransformers (`BAAI/bge-large-en`) | Semantic understanding |
+| **Vector DB** | FAISS | Fast similarity search |
+| **Summarization** | Transformers (`google/pegasus-xsum`) | Content summarization |
+| **Q&A Engine** | Transformers (`deepset/roberta-base-squad2`) | Question answering |
+
+---
+
+## 🚀 **Quick Start Guide**
+
+### **Prerequisites**
+- Python 3.8 or higher
+- 4GB+ RAM (for AI models)
+- Windows/macOS/Linux
+
+### **Installation**
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/Esataydin/Smart-Document-Summarizer.git
    cd Smart-Document-Summarizer
    ```
 
-2. Create and activate a virtual environment (optional but recommended):
-
+2. **Set up virtual environment** *(recommended)*
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   # Create environment
+   python -m venv dociq-env
+   
+   # Activate environment
+   # Windows:
+   dociq-env\Scripts\activate
+   # macOS/Linux:
+   source dociq-env/bin/activate
    ```
 
-3. Install dependencies:
-
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Run the app:
-
+4. **Launch DocIQ**
    ```bash
    streamlit run main.py
    ```
 
-* Upload a PDF document.
-* Alternatively, try the included test.pdf file in the repository/folder for a quick demo.
-* Choose a summary role and generate a tailored summary.
-* Ask questions about the document and get relevant answers with context.
-* Download summaries and Q\&A results for offline use.
+5. **Open your browser** and navigate to `http://localhost:8501`
+
+### **🎯 Quick Demo**
+1. Upload the included `test.pdf` file
+2. Select a role (try "CEO" for business insights)
+3. Generate summary and explore Q&A features
 
 ---
 
-## 📂 Folder Structure
-├── main.py              # Streamlit application <br>
-├── requirements.txt     # Dependencies <br>
-├── test.pdf             # Example document for test <br>
-├── test.txt             # Example document for test(future work) <br>
-└── README.md            # Project documentation <br>
+## � **Project Structure**
 
-
-
-
----
-
-## 📌 Notes
-- All models run locally — no OpenAI API key required
-- Works offline and respects document privacy
-- Best performance with medium-length PDFs (~5–10 pages)
+```
+📦 Smart-Document-Summarizer/
+├── 🚀 main.py                 # Main Streamlit application
+├── 📋 requirements.txt        # Python dependencies
+├── 📖 README.md              # Project documentation
+├── 🔧 .env                   # Environment variables
+├── 📄 test.pdf               # Sample PDF for testing
+├── � test.txt               # Sample text file
+└── 📁 venv/                  # Virtual environment
+```
 
 ---
 
-## How It Works
+## 🧠 **How DocIQ Works**
 
-1. **Document Processing:**
+### **1. Document Processing Pipeline**
+```
+PDF Upload → Text Extraction → Intelligent Chunking → Embedding Generation
+```
 
-   * The uploaded PDF is parsed, and the text is extracted.
-   * The text is chunked into overlapping segments to maintain context.
+### **2. AI-Powered Analysis**
+```
+User Query → Semantic Search → Context Retrieval → AI Response Generation
+```
 
-2. **Embedding & Indexing:**
+### **3. Role-Based Intelligence**
+DocIQ uses specialized prompts for different user roles:
 
-   * Each text chunk is converted into embeddings using a pre-trained SentenceTransformer model.
-   * The embeddings are indexed using FAISS for fast similarity searches.
-
-3. **Summarization:**
-
-   * Users select a role, which defines the style and focus of the summary.
-   * The summarization model generates summaries of the first few chunks, tailored to the selected role.
-
-4. **Q\&A Interface:**
-
-   * User questions are embedded and matched against the document chunks.
-   * Top relevant chunks are retrieved and combined with the question to generate an answer via the summarization pipeline.
-
----
-
-## Role Prompts
-
-The app customizes the summaries using role-specific prompts:
-
-* **General:** Clear and concise summary.
-* **CEO:** Business value and high-level takeaways without jargon.
-* **Engineer:** Technical details, architecture, and metrics.
-* **Legal Analyst:** Legal terms, obligations, dates, and compliance.
+| Role | Focus Areas |
+|------|-------------|
+| **General** | Clear, balanced overview |
+| **CEO** | Business value, ROI, strategic implications |
+| **Engineer** | Technical details, architecture, performance |
+| **Legal Analyst** | Compliance, risks, obligations, dates |
 
 ---
 
-## Contributing
+## 🔧 **Configuration & Customization**
 
-Contributions are welcome! Please open issues or submit pull requests for improvements and bug fixes.
+### **Environment Variables**
+Create a `.env` file for custom configurations:
+```env
+CHUNK_SIZE=300
+OVERLAP_SIZE=50
+MAX_DOCUMENT_SIZE=15000
+```
+
+### **Model Customization**
+You can modify the AI models in `main.py`:
+```python
+# Current models
+embed_model = SentenceTransformer('BAAI/bge-large-en')
+summarizer = pipeline("summarization", model="google/pegasus-xsum")
+qa_model = pipeline("question-answering", model="deepset/roberta-base-squad2")
+```
 
 ---
 
-## Acknowledgments
+## 🎮 **Usage Examples**
 
-* Thanks to Hugging Face and SentenceTransformers for providing excellent NLP models.
-* FAISS by Facebook AI for scalable vector search.
-* Streamlit for easy app development.
+### **Business Intelligence**
+```
+Role: CEO
+Document: Annual Report
+Result: Strategic insights, financial highlights, growth opportunities
+```
+
+### **Technical Analysis**
+```
+Role: Engineer
+Document: System Architecture Doc
+Result: Performance metrics, technical specifications, implementation details
+```
+
+### **Compliance Review**
+```
+Role: Legal Analyst
+Document: Contract Agreement
+Result: Key obligations, important dates, compliance requirements
+```
 
 ---
 
-If you have any questions or suggestions, feel free to reach out!
+## 🚦 **Performance & Limitations**
+
+### **✅ Optimal Performance**
+- Document size: 5-10 pages
+- File formats: PDF (best support)
+- Languages: English (primary)
+
+### **⚠️ Current Limitations**
+- Large documents may have performance issues
+- Limited to PDF format (TXT support in development)
+- Requires local GPU for optimal performance
 
 ---
 
-*Created by Esataydin*
+## 🛣️ **Roadmap & Future Enhancements**
+
+- [ ] **Multi-format Support**: Word, PowerPoint, Excel
+- [ ] **Multi-language Processing**: Support for 50+ languages
+- [ ] **Advanced Analytics**: Sentiment analysis, key metrics extraction
+- [ ] **Cloud Deployment**: Optional cloud hosting
+- [ ] **API Integration**: RESTful API for programmatic access
+- [ ] **Collaborative Features**: Team workspaces and sharing
+
+---
+
+## 🤝 **Contributing**
+
+We welcome contributions! Here's how you can help:
+
+1. **🐛 Report Issues**: Found a bug? [Open an issue](https://github.com/Esataydin/Smart-Document-Summarizer/issues)
+2. **💡 Feature Requests**: Have an idea? [Start a discussion](https://github.com/Esataydin/Smart-Document-Summarizer/discussions)
+3. **🔧 Code Contributions**: Submit pull requests with improvements
+4. **📖 Documentation**: Help improve documentation and examples
+
+### **Development Setup**
+```bash
+# Fork the repo, then:
+git clone https://github.com/yourusername/Smart-Document-Summarizer.git
+cd Smart-Document-Summarizer
+pip install -r requirements.txt
+# Make your changes and submit a PR!
+```
+
+---
+
+## 📜 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 **Acknowledgments**
+
+### **Open Source Heroes**
+- **[Hugging Face](https://huggingface.co/)** - Transformers and model hosting
+- **[Sentence Transformers](https://www.sbert.net/)** - Semantic embeddings
+- **[FAISS](https://github.com/facebookresearch/faiss)** - Vector similarity search
+- **[Streamlit](https://streamlit.io/)** - Web app framework
+- **[PyMuPDF](https://pymupdf.readthedocs.io/)** - PDF processing
+
+---
+
+<div align="center">
+
+### 💬 **Questions? Feedback?**
+
+**We'd love to hear from you!**
+
+[🐛 Issues](https://github.com/Esataydin/Smart-Document-Summarizer/issues) • [💡 Discussions](https://github.com/Esataydin/Smart-Document-Summarizer/discussions)
+
+---
+
+*Built by [Esataydin](https://github.com/Esataydin)*
+
+**⭐ Star this repo if DocIQ helped you!**
+
+</div>
